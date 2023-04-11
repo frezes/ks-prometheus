@@ -127,3 +127,24 @@ rules:
   verbs:
   - list
   - watch
+- apiGroups:
+  - iam.kubesphere.io
+  resources:
+  - users
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - cluster.kubesphere.io
+  resources:
+  - clusters
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - tenant.kubesphere.io
+  resources:
+  - workspacetemplates
+  verbs:
+  - list
+  - watch

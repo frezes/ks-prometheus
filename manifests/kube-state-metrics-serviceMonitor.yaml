@@ -18,6 +18,12 @@ spec:
       regex: kube_endpoint_address_not_ready|kube_endpoint_address_available
       sourceLabels:
       - __name__
+    - action: replace
+      regex: (.*)
+      replacement: $1
+      sourceLabels:
+      - label_kubesphere_io_workspace
+      targetLabel: workspace
     port: https-main
     relabelings:
     - action: labeldrop

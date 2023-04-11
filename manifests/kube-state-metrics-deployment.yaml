@@ -32,6 +32,9 @@ spec:
         - --port=8081
         - --telemetry-host=127.0.0.1
         - --telemetry-port=8082
+        - --metric-annotations-allowlist=clusterroles=[kubesphere.io/creator]
+        - --metric-labels-allowlist=namespaces=[kubesphere.io/workspace]
+        - "--custom-resource-state-config=spec:\n  resources:\n    - groupVersionKind:\n        group: iam.kubesphere.io\n        kind: \"User\"\n        version: \"v1alpha2\"\n      metricNamePrefix: \"\"\n      metrics:\n        - name: \"kubesphere_user_info\"\n          help: \"information about iam.kubesphere.io/user.\"\n          each:\n            type: Info\n            info: \n              labelsFromPath:\n                user: [metadata, name]\n    - groupVersionKind:\n        group: cluster.kubesphere.io\n        kind: \"Cluster\"\n        version: \"v1alpha1\"\n      metricNamePrefix: \"\"\n      metrics:\n        - name: \"kubesphere_cluster_info\"\n          help: \"information about cluster.kubesphere.io/cluster.\"\n          each:\n            type: Info\n            info: \n              labelsFromPath:\n                cluster_name: [metadata, name]\n    - groupVersionKind:\n        group: tenant.kubesphere.io\n        kind: \"WorkspaceTemplate\"\n        version: \"v1alpha2\"\n      metricNamePrefix: \"\"\n      metrics:\n        - name: \"kubesphere_workspace_template_info\"\n          help: \"information about tenant.kubesphere.io/workspacetemplate.\"\n          each:\n            type: Info\n            info: \n              labelsFromPath:\n                workspace_template: [metadata, name]\n                manager: [spec, template, spec, manager]\n"
         image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.8.2
         name: kube-state-metrics
         resources:
