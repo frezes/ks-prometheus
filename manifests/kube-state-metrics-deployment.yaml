@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
     app.kubernetes.io/part-of: kube-prometheus
-    app.kubernetes.io/version: 2.8.2
+    app.kubernetes.io/version: 2.9.2
   name: kube-state-metrics
   namespace: monitoring
 spec:
@@ -23,7 +23,7 @@ spec:
         app.kubernetes.io/component: exporter
         app.kubernetes.io/name: kube-state-metrics
         app.kubernetes.io/part-of: kube-prometheus
-        app.kubernetes.io/version: 2.8.2
+        app.kubernetes.io/version: 2.9.2
     spec:
       automountServiceAccountToken: true
       containers:
@@ -35,7 +35,7 @@ spec:
         - --metric-annotations-allowlist=clusterroles=[kubesphere.io/creator]
         - --metric-labels-allowlist=namespaces=[kubesphere.io/workspace]
         - "--custom-resource-state-config=spec:\n  resources:\n    - groupVersionKind:\n        group: iam.kubesphere.io\n        kind: \"User\"\n        version: \"v1alpha2\"\n      metricNamePrefix: \"\"\n      metrics:\n        - name: \"kubesphere_user_info\"\n          help: \"information about iam.kubesphere.io/user.\"\n          each:\n            type: Info\n            info: \n              labelsFromPath:\n                user: [metadata, name]\n    - groupVersionKind:\n        group: cluster.kubesphere.io\n        kind: \"Cluster\"\n        version: \"v1alpha1\"\n      metricNamePrefix: \"\"\n      metrics:\n        - name: \"kubesphere_cluster_info\"\n          help: \"information about cluster.kubesphere.io/cluster.\"\n          each:\n            type: Info\n            info: \n              labelsFromPath:\n                cluster_name: [metadata, name]\n    - groupVersionKind:\n        group: tenant.kubesphere.io\n        kind: \"WorkspaceTemplate\"\n        version: \"v1alpha2\"\n      metricNamePrefix: \"\"\n      metrics:\n        - name: \"kubesphere_workspace_template_info\"\n          help: \"information about tenant.kubesphere.io/workspacetemplate.\"\n          each:\n            type: Info\n            info: \n              labelsFromPath:\n                workspace_template: [metadata, name]\n                manager: [spec, template, spec, manager]\n"
-        image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.8.2
+        image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.9.2
         name: kube-state-metrics
         resources:
           limits:
@@ -50,13 +50,16 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: true
+          runAsNonRoot: true
           runAsUser: 65534
+          seccompProfile:
+            type: RuntimeDefault
       - args:
         - --logtostderr
         - --secure-listen-address=:8443
         - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
         - --upstream=http://127.0.0.1:8081/
-        image: quay.io/brancz/kube-rbac-proxy:v0.14.1
+        image: quay.io/brancz/kube-rbac-proxy:v0.14.2
         name: kube-rbac-proxy-main
         ports:
         - containerPort: 8443
@@ -82,7 +85,7 @@ spec:
         - --secure-listen-address=:9443
         - --tls-cipher-suites=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
         - --upstream=http://127.0.0.1:8082/
-        image: quay.io/brancz/kube-rbac-proxy:v0.14.1
+        image: quay.io/brancz/kube-rbac-proxy:v0.14.2
         name: kube-rbac-proxy-self
         ports:
         - containerPort: 9443
