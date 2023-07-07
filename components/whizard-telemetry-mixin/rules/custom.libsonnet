@@ -139,6 +139,48 @@
               sum by (cluster,node)(node_load15 / on(cluster,node) node:node_num_cpu:sum) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
             ||| % $._config,
           },
+          {
+            record: 'node:data_volume_iops_reads:sum',
+            expr: |||
+              sum by (node, %(clusterLabel)s)(irate(node_disk_reads_completed_total{%(nodeExporterSelector)s}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+            ||| % $._config,
+          },
+          {
+            record: 'node:data_volume_iops_writes:sum',
+            expr: |||
+              sum by (node, %(clusterLabel)s)(irate(node_disk_writes_completed_total{%(nodeExporterSelector)s}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+            ||| % $._config,
+          },
+          {
+            record: 'node:data_volume_throughput_bytes_read:sum',
+            expr: |||
+              sum by (node, %(clusterLabel)s)(irate(node_disk_read_bytes_total{%(nodeExporterSelector)s}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+            ||| % $._config,
+          },
+          {
+            record: 'node:data_volume_throughput_bytes_written:sum',
+            expr: |||
+              sum by (node, %(clusterLabel)s)(irate(node_disk_written_bytes_total{%(nodeExporterSelector)s}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+            ||| % $._config,
+          },
+          {
+            record: 'node:node_inodes_utilisation:ratio',
+            expr: |||
+              node:node_inodes_used_total:sum / node:node_inodes_total:sum
+            ||| % $._config,
+          }, 
+          {
+            record: 'node:node_inodes_total:sum',
+            expr: |||
+              sum by (node, %(clusterLabel)s)(node_filesystem_files{%(nodeExporterSelector)s, %(hostFilesystemDeviceSelector)s}) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+            ||| % $._config,
+          },
+          {
+            record: 'node:node_inodes_used_total:sum',
+            expr: |||
+              sum by (node, %(clusterLabel)s)(node_filesystem_files{%(nodeExporterSelector)s, %(hostFilesystemDeviceSelector)s} - node_filesystem_files_free{%(nodeExporterSelector)s, %(hostFilesystemDeviceSelector)s}) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+            ||| % $._config,
+          },
         ],
       },
       {

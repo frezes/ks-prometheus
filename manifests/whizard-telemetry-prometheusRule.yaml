@@ -7,7 +7,7 @@ metadata:
     prometheus: k8s
     role: alert-rules
   name: whizard-telemetry-rules
-  namespace: monitoring
+  namespace: kubesphere-monitoring-system
 spec:
   groups:
   - name: kubernetes-apps
@@ -102,6 +102,27 @@ spec:
     - expr: |
         sum by (cluster,node)(node_load15 / on(cluster,node) node:node_num_cpu:sum) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
       record: node:node_load15_per_cpu:ratio
+    - expr: |
+        sum by (node, cluster)(irate(node_disk_reads_completed_total{job="node-exporter"}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+      record: node:data_volume_iops_reads:sum
+    - expr: |
+        sum by (node, cluster)(irate(node_disk_writes_completed_total{job="node-exporter"}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+      record: node:data_volume_iops_writes:sum
+    - expr: |
+        sum by (node, cluster)(irate(node_disk_read_bytes_total{job="node-exporter"}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+      record: node:data_volume_throughput_bytes_read:sum
+    - expr: |
+        sum by (node, cluster)(irate(node_disk_written_bytes_total{job="node-exporter"}[5m])) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+      record: node:data_volume_throughput_bytes_written:sum
+    - expr: |
+        node:node_inodes_used_total:sum / node:node_inodes_total:sum
+      record: node:node_inodes_utilisation:ratio
+    - expr: |
+        sum by (node, cluster)(node_filesystem_files{job="node-exporter", device=~"/dev/.*",device!~"/dev/loop\\d+"}) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+      record: node:node_inodes_total:sum
+    - expr: |
+        sum by (node, cluster)(node_filesystem_files{job="node-exporter", device=~"/dev/.*",device!~"/dev/loop\\d+"} - node_filesystem_files_free{job="node-exporter", device=~"/dev/.*",device!~"/dev/loop\\d+"}) *  on(node, cluster) group_left(host_ip, role) max by(node, host_ip, role, cluster) (workspace_workload_node:kube_pod_info:{node!="",host_ip!=""})
+      record: node:node_inodes_used_total:sum
   - name: apiserver.rules
     rules:
     - expr: |

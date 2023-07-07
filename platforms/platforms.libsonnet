@@ -1,5 +1,5 @@
 local platforms = {
-  kubesphere: import './kubesphere.libsonnet',
+  whizardTelemetry: import './whizardTelemetry.libsonnet',
 };
 
 // platformPatch returns the platform specific patch associated to the given

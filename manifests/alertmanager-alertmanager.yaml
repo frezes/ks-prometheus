@@ -8,8 +8,22 @@ metadata:
     app.kubernetes.io/part-of: kube-prometheus
     app.kubernetes.io/version: 0.25.0
   name: main
-  namespace: monitoring
+  namespace: kubesphere-monitoring-system
 spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: alert-router
+              app.kubernetes.io/instance: main
+              app.kubernetes.io/name: alertmanager
+              app.kubernetes.io/part-of: kube-prometheus
+          namespaces:
+          - kubesphere-monitoring-system
+          topologyKey: kubernetes.io/hostname
+        weight: 100
   image: quay.io/prometheus/alertmanager:v0.25.0
   nodeSelector:
     kubernetes.io/os: linux
